@@ -27,5 +27,16 @@ public class TestRxElct {
 		rxe.ajoutMaison(new Maison("M1" , Consomation.FORTE)); // maj d'une maison
 		
 		System.out.println(rxe.afficherMaisons());
+		
+		rxe.ajoutConnexion(m1, g1);
+		rxe.ajoutConnexion(m1, g1);
+		rxe.ajoutConnexion(m2, g2);
+		rxe.ajoutConnexion(m2, g1);
+		rxe.ajoutConnexion(m4, g2);
+		
+		
+		System.out.println(rxe.afficherConnexion());
+		
+		
 	}
 }

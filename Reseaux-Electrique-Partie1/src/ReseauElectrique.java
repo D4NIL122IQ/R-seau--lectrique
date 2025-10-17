@@ -18,11 +18,11 @@ public class ReseauElectrique {
 	}
 
 	public void ajoutMaison(Maison m) {
-		if(maisons.isEmpty()) {
+		if (maisons.isEmpty()) {
 			maisons.add(m);
-		}else {
-			for(Maison t : maisons) {
-				if(t.equals(m)) {
+		} else {
+			for (Maison t : maisons) {
+				if (t.equals(m)) {
 					t.setConso(m.getConso());
 					System.out.println("Maison existante maj de ses info" + t);
 					return;
@@ -33,11 +33,11 @@ public class ReseauElectrique {
 	}
 
 	public void ajoutGenerateur(Generateur g) {
-		if(generateurs.isEmpty()) {
+		if (generateurs.isEmpty()) {
 			generateurs.add(g);
-		}else {
-			for(Generateur t : generateurs) {
-				if(t.equals(g)) {
+		} else {
+			for (Generateur t : generateurs) {
+				if (t.equals(g)) {
 					t.setCapaMax(g.getCapaciteMax());
 					System.out.println("Generateur existant maj de ses info" + t);
 					return;
@@ -51,30 +51,53 @@ public class ReseauElectrique {
 		Connexion temp = new Connexion(m, g);
 		if (connexion.isEmpty()) {
 			connexion.add(temp);
+			g.setCapaciteActu(m.getConso().getConso());
 		} else if (connexion.contains(temp)) {
 			System.out.println("connexioon existante");
+		} else if(Connexion.contientMaison(m.getNomM(), connexion)){
+			System.out.println("Maison deja connecté");
 		}else {
 			connexion.add(temp);
+			g.setCapaciteActu(m.getConso().getConso());
 		}
 	}
-	
+
 	public String afficherMaisons() {
 		StringBuffer temp = new StringBuffer();
-		
-		for(Maison m : maisons) {
+
+		for (Maison m : maisons) {
 			temp.append(m.toString());
 		}
-		
+
 		return temp.toString();
 	}
-	
+
 	public String affichergenerateur() {
 		StringBuffer temp = new StringBuffer();
-		
-		for(Generateur g : generateurs) {
+
+		for (Generateur g : generateurs) {
 			temp.append(g.toString());
 		}
-		
+
 		return temp.toString();
+	}
+
+	public String afficherConnexion() {
+		StringBuffer t = new StringBuffer("Reseau de distribution d'electricite : \n");
+
+		for (Generateur g : generateurs) {
+			t.append("+----------------+\n");
+			t.append("| " + g.getNomG() +"		|\n");
+			t.append("+----------------+\n");
+			t.append("        |\n");
+			t.append("        | alimente ↓");
+			for (Connexion c : connexion) {
+				if(c.getGen().equals(g)) {
+					t.append("+--> " + c.getMs().getNomM() );
+				}
+			}
+			t.append("\n");
+		}
+		return t.toString();
 	}
 }
