@@ -2,24 +2,27 @@
 public class Generateur {
 	private String nomG;
 	private int capaciteMax;
-	private int capaciteActu;  // pour l'instant cette variable sera mise a jour a chaque ajout d'une connexion
+	private int chargeActu;  // pour l'instant cette variable sera mise a jour a chaque ajout d'une connexion
 	
 	public Generateur(String n, int cm) {
 		nomG = n;
 		capaciteMax = cm;
-		capaciteActu = cm;
+		chargeActu = 0;
 	}
 	
-	public void setCapaciteActu(int consoMaison) {
+	public void setChargeActu(int consoMaison) {
 		/*
-		 * a chaque fois qu'on ajoute une connexion entre une maison et un generateur sa capacite diminue
+		 * a chaque fois qu'on ajoute une connexion entre une maison et un generateur la charge augmente
 		 */
-		capaciteActu -= consoMaison; 
+		chargeActu += consoMaison; 
+	}
+	
+	public int getChargeActu() {
+		return chargeActu;
 	}
 	
 	public void setCapaMax(int capa) {
 		capaciteMax = capa;
-		capaciteActu = capa;
 	}
 
 	public String getNomG() {

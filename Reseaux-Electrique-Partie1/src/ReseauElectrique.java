@@ -51,14 +51,14 @@ public class ReseauElectrique {
 		Connexion temp = new Connexion(m, g);
 		if (connexion.isEmpty()) {
 			connexion.add(temp);
-			g.setCapaciteActu(m.getConso().getConso());
+			g.setChargeActu(m.getConso().getConso());
 		} else if (connexion.contains(temp)) {
 			System.out.println("connexioon existante");
 		} else if(Connexion.contientMaison(m.getNomM(), connexion)){
 			System.out.println("Maison deja connecté");
 		}else {
 			connexion.add(temp);
-			g.setCapaciteActu(m.getConso().getConso());
+			g.setChargeActu(m.getConso().getConso());
 		}
 	}
 

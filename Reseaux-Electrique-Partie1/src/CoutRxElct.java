@@ -1,31 +1,60 @@
+import java.util.ArrayList;
 
 public class CoutRxElct {
-	private Connexion c;
-	
-	public CoutRxElct(Connexion c) {
-		this.c = c;
+	private ArrayList<Connexion> co;
+	private ArrayList<Generateur> gen;
+
+
+	public CoutRxElct(ArrayList<Connexion> c, ArrayList<Generateur> g) {
+		this.co = c;
+		this.gen = g;
 	}
-	
+
+	private double moyenneGen() {
+		int somme = 0;
+
+		for (Generateur g : gen) {
+			somme += g.getChargeActu();
+		}
+
+		return somme / gen.size();
+	}
+
 	private double disp() {
-		return 0;
+		/*
+		 * return : disp = SOMME(|Ug - Um|) tel que Ug la charge actuelle du generateur
+		 * et Um la moyenne des charges
+		 */
+		double somme = 0;
+		double Um = moyenneGen();
+		for (Generateur g : gen) {
+			somme += Math.abs(g.getChargeActu() - Um);
+		}
+
+		return somme;
 	}
-	
+
 	private double surcharge() {
-		return 0;
+		double somme = 0 ;
+		
+		for(Generateur g: gen) {
+			somme += Math.max(0, ((g.getChargeActu() - g.getCapaciteMax()) / g.getCapaciteMax()));
+		}
+		return somme;
 	}
+
 	public double calculeCoutRxE() {
 		double severitePenalisation = 10;
-		
+
 		return disp() + severitePenalisation * surcharge();
 	}
-	
+
 	public void modifierConnexion() {
-		
+
 	}
-	
-	
+
 	public void afficherReseau() {
-		
+
 	}
-	
+
 }
