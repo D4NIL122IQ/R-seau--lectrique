@@ -17,6 +17,17 @@ public class ReseauElectrique {
 		this(new ArrayList<Maison>(), new ArrayList<Generateur>());
 	}
 	
+	public ArrayList<Maison> getMaisons(){
+		return maisons;
+	}
+	
+	public ArrayList<Connexion> getConnexions(){
+		return connexion;
+	}
+	
+	public ArrayList<Generateur> getGens(){
+		return generateurs;
+	}
 	/*
 	 * ajoute une maison a la liste des maisons :
 	 * SI la liste est vide OU la liste ne contient pas deja une maison qui a le meme nom
@@ -88,7 +99,8 @@ public class ReseauElectrique {
 		}
 		
 	}
-
+	
+	
 	public String afficherMaisons() {
 		StringBuffer temp = new StringBuffer();
 

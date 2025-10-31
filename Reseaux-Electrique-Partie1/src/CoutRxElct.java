@@ -5,9 +5,9 @@ public class CoutRxElct {
 	private ArrayList<Generateur> gen;
 	
 	
-	public CoutRxElct(ArrayList<Connexion> c, ArrayList<Generateur> g) {
-		this.co = c;
-		this.gen = g;
+	public CoutRxElct(ReseauElectrique rxe) {
+		this.co = rxe.getConnexions();
+		this.gen = rxe.getGens();
 	}
 
 	private double moyenneGen() {
