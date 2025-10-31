@@ -30,7 +30,13 @@ public class Connexion {
 			return false;
 		}
 	}
-
+	
+	/*
+	 * Verifier si une liste de connexion contient une maison (nomM)
+	 *  
+	 * @param nomM nom d'une maison
+	 * @param connexion liste de connexion 
+	 */
 	public static boolean contientMaison(String nomM, ArrayList<Connexion> connexion) {
 		for (Connexion c : connexion) {
 			if (c.getMs().getNomM().equals(nomM)) {

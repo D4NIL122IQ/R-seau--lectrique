@@ -3,8 +3,8 @@ import java.util.ArrayList;
 public class CoutRxElct {
 	private ArrayList<Connexion> co;
 	private ArrayList<Generateur> gen;
-
-
+	
+	
 	public CoutRxElct(ArrayList<Connexion> c, ArrayList<Generateur> g) {
 		this.co = c;
 		this.gen = g;

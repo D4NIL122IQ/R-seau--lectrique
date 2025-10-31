@@ -12,11 +12,18 @@ public class ReseauElectrique {
 		generateurs = g;
 		connexion = new ArrayList<>();
 	}
-
+	
 	public ReseauElectrique() {
 		this(new ArrayList<Maison>(), new ArrayList<Generateur>());
 	}
-
+	
+	/*
+	 * ajoute une maison a la liste des maisons :
+	 * SI la liste est vide OU la liste ne contient pas deja une maison qui a le meme nom
+	 * SINON maj de la consomation de la maison existante 
+	 * 
+	 * @param m une maison
+	 */
 	public void ajoutMaison(Maison m) {
 		if (maisons.isEmpty()) {
 			maisons.add(m);
@@ -31,7 +38,14 @@ public class ReseauElectrique {
 			maisons.add(m);
 		}
 	}
-
+	
+	/*
+	 * ajoute une maison a la liste des generateur :
+	 * SI la liste est vide OU la liste ne contient pas deja un generateur qui a le meme nom
+	 * SINON maj de la charge du generateur existant 
+	 * 
+	 * @param g un generateur
+	 */
 	public void ajoutGenerateur(Generateur g) {
 		if (generateurs.isEmpty()) {
 			generateurs.add(g);
@@ -46,20 +60,33 @@ public class ReseauElectrique {
 			generateurs.add(g);
 		}
 	}
-
+	
+	
+	/*
+	 * ajoute une connexion (maison, generateur) :
+	 * SI la liste des connexions est vide OU la maison n'est pas deja connecter
+	 * 
+	 * @param m une maison 
+	 * @param g un generteur
+	 */
 	public void ajoutConnexion(Maison m, Generateur g) {
-		Connexion temp = new Connexion(m, g);
-		if (connexion.isEmpty()) {
-			connexion.add(temp);
-			g.setChargeActu(m.getConso().getConso());
-		} else if (connexion.contains(temp)) {
-			System.out.println("connexioon existante");
-		} else if(Connexion.contientMaison(m.getNomM(), connexion)){
-			System.out.println("Maison deja connecté");
+		if(generateurs.contains(g) && maisons.contains(m)) {
+			Connexion temp = new Connexion(m, g);
+			if (connexion.isEmpty()) {
+				connexion.add(temp);
+				g.setChargeActu(m.getConso().getConso());
+			} else if (connexion.contains(temp)) {
+				System.out.println("connexioon existante");
+			} else if(Connexion.contientMaison(m.getNomM(), connexion)){
+				System.out.println("Maison deja connecté");
+			}else {
+				connexion.add(temp);
+				g.setChargeActu(m.getConso().getConso());
+			}
 		}else {
-			connexion.add(temp);
-			g.setChargeActu(m.getConso().getConso());
+			System.out.println("Maison OU Generateur non existant");
 		}
+		
 	}
 
 	public String afficherMaisons() {

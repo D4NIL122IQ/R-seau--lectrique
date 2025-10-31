@@ -10,10 +10,11 @@ public class Generateur {
 		chargeActu = 0;
 	}
 	
+	
+	/*
+	 * representre la somme des demandes electrique des maisons connecter a ce generateur
+	 */
 	public void setChargeActu(int consoMaison) {
-		/*
-		 * a chaque fois qu'on ajoute une connexion entre une maison et un generateur la charge augmente
-		 */
 		chargeActu += consoMaison; 
 	}
 	
@@ -21,6 +22,9 @@ public class Generateur {
 		return chargeActu;
 	}
 	
+	/*
+	 * Modifier la vapaciter max d'un generateur 
+	 */
 	public void setCapaMax(int capa) {
 		capaciteMax = capa;
 	}
