@@ -17,6 +17,10 @@ public class Connexion {
 		return m;
 	}
 
+    public void setGen(Generateur g) {
+        this.g = g;
+    }
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Connexion) {

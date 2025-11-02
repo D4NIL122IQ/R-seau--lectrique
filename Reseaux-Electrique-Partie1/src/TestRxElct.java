@@ -211,9 +211,8 @@ class Utilisateur {
                         break;
                     case 2:
                         System.out.println("• Modifier une connexion");
-                        // La méthode est vide dans votre classe CoutRxElct
-                        crxe.modifierConnexion();
-                        System.out.println("  -> NOTE: La fonction 'modifierConnexion' n'est pas encore implementee.");
+                        // On passe le scanner pour que la méthode puisse lire l'entrée
+                        crxe.modifierConnexion(clavier);
                         break;
                     case 3:
                         System.out.println("• Affichage du reseau actuel");
