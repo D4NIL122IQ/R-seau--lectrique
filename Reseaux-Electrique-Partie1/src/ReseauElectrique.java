@@ -35,21 +35,43 @@ public class ReseauElectrique {
 	 * 
 	 * @param m une maison
 	 */
-	public void ajoutMaison(Maison m) {
-		if (maisons.isEmpty()) {
-			maisons.add(m);
-		} else {
-			for (Maison t : maisons) {
-				if (t.equals(m)) {
-					t.setConso(m.getConso());
-					System.out.println("Maison existante maj de ses info" + t);
-					return;
-				}
-			}
-			maisons.add(m);
-		}
-	}
-	
+    public void ajoutMaison(Maison m) {
+        if (maisons.isEmpty()) {
+            maisons.add(m);
+        } else {
+            for (Maison t : maisons) {
+                if (t.equals(m)) {
+                    // --- DÉBUT DE LA CORRECTION ---
+
+                    // 1. Sauvegarder les anciennes et nouvelles consommations
+                    Consomation oldConso = t.getConso();
+                    Consomation newConso = m.getConso();
+
+                    // 2. Mettre à jour la maison
+                    t.setConso(newConso);
+                    System.out.println("Maison existante maj de ses info" + t);
+
+                    // 3. Mettre à jour la charge du générateur connecté (s'il y en a un)
+                    for (Connexion c : connexion) {
+                        if (c.getMs().equals(t)) {
+                            // 4. On a trouvé la connexion de cette maison
+                            Generateur g = c.getGen();
+
+                            // 5. On met à jour la charge du générateur
+                            g.soustraireCharge(oldConso.getConso());
+                            g.setChargeActu(newConso.getConso());
+
+                            System.out.println("  -> Mise a jour charge " + g.getNomG() + ": " + g.getChargeActu() + "kwh");
+                            break; // On a trouvé la connexion, on sort de la boucle
+                        }
+                    }
+                    // --- FIN DE LA CORRECTION ---
+                    return;
+                }
+            }
+            maisons.add(m);
+        }
+    }
 	/*
 	 * ajoute une maison a la liste des generateur :
 	 * SI la liste est vide OU la liste ne contient pas deja un generateur qui a le meme nom

@@ -17,7 +17,15 @@ public class Generateur {
 	public void setChargeActu(int consoMaison) {
 		chargeActu += consoMaison; 
 	}
-	
+
+    public void soustraireCharge(int consoMaison) {
+        chargeActu -= consoMaison;
+        // S'assurer qu'on ne tombe pas en dessous de 0
+        if (chargeActu < 0) {
+            chargeActu = 0;
+        }
+    }
+
 	public int getChargeActu() {
 		return chargeActu;
 	}
