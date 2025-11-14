@@ -106,7 +106,11 @@ public class ReseauElectrique {
     }
 
     /**
-     * VOTRE VERSION de ajoutGenerateur
+     * Ajoute un générateur au réseau. 
+     * Si un générateur avec le même nom existe déjà,
+     * met à jour sa capacité maximale.
+     *
+     * @param g Le générateur à ajouter ou à mettre à jour.
      */
     public void ajoutGenerateur(Generateur g) {
         if (gens.isEmpty()) {
@@ -127,9 +131,16 @@ public class ReseauElectrique {
 
 
     /**
-     * VERSION CORRIGÉE de ajoutConnexion
-     * Elle autorise les connexions multiples pour que la validation (Option 5)
-     * puisse les détecter comme des erreurs.
+     * Ajoute une connexion entre une maison et un générateur.
+     * Vérifie si les objets maison et générateur existent (non null) et 
+     * si la connexion exacte n'existe pas déjà.
+     * Met à jour la charge actuelle du générateur en lui ajoutant la consommation de la maison.
+     * Note : Cette méthode peut créer des connexions multiples pour une même maison
+     * (vers différents générateurs), qui seront détectées comme des erreurs
+     * par la suite.
+     *
+     * @param m La maison à connecter (doit être non null).
+     * @param g Le générateur auquel se connecter (doit être non null).
      */
     public void ajoutConnexion(Maison m, Generateur g) {
         // On vérifie juste si les objets existent
@@ -153,8 +164,12 @@ public class ReseauElectrique {
     }
 
     /**
-     * MÉTHODE MANQUANTE (Option 4)
-     * Tente de supprimer une connexion.
+     * Supprime une connexion spécifique entre une maison et un générateur.
+     * Si la connexion est trouvée, elle est retirée de la liste et
+     * la charge du générateur est mise à jour.
+     *
+     * @param m La maison faisant partie de la connexion à supprimer.
+     * @param g Le générateur faisant partie de la connexion à supprimer.
      */
     public void supprimerConnexion(Maison m, Generateur g) {
         if (m == null || g == null) {
@@ -180,9 +195,13 @@ public class ReseauElectrique {
     }
 
     /**
-     * MÉTHODE MANQUANTE (Option 5)
-     * Valide le réseau : chaque maison doit avoir exactement 1 connexion.
-     * @return true si le réseau est conforme, false sinon.
+     * Valide la conformité du réseau.
+     * Un réseau est considéré comme conforme si chaque maison enregistrée
+     * possède exactement une connexion.
+     * Les maisons sans connexion ou avec des connexions multiples sont
+     * signalées comme des erreurs sur la sortie d'erreur standard.
+     *
+     * @return true si le réseau est conforme (chaque maison a 1 connexion), false sinon.
      */
     public boolean validerReseau() {
         ArrayList<String> problemes = new ArrayList<>();
@@ -217,10 +236,6 @@ public class ReseauElectrique {
         }
     }
 
-
-    /**
-     * VOTRE VERSION de l'affichage (personnalisé)
-     */
     public String afficherConnexion() {
         StringBuffer t = new StringBuffer("\n--- ETAT ACTUEL DU RESEAU ---\n");
 

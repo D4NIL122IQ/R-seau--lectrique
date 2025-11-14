@@ -200,4 +200,4 @@ Durant le développement, plusieurs problèmes de logique ont été identifiés 
 
 ## 🧑‍💻 Auteurs
 
-* **(Votre Nom / Pseudo)**
+* © [@D4NIL122IQ](github.com/D4NIL122IQ) - [@assinscreedFC](github.com/assinscreedFC)

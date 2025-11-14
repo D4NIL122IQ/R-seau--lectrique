@@ -4,10 +4,20 @@ public enum Consomation {
 	
 	private final int conso;
 	
+	/**
+     * Constructeur du niveau de consommation.
+     *
+     * @param conso valeur numérique associée
+     */
 	private Consomation(int conso) {
 		this.conso = conso;
 	}
 	
+	/**
+     * Renvoie la valeur numérique associée au niveau de consommation.
+     *
+     * @return valeur de consommation
+     */
 	public int getConso() {
 		return this.conso;
 	}

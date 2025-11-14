@@ -17,7 +17,13 @@ public class Generateur {
 	public void setChargeActu(int consoMaison) {
 		chargeActu += consoMaison; 
 	}
-
+	
+	 /**
+     * Retire la consommation d'une maison de la charge actuelle.
+     * La charge ne peut pas devenir négative.
+     *
+     * @param consoMaison consommation de la maison à soustraire
+     */
     public void soustraireCharge(int consoMaison) {
         chargeActu -= consoMaison;
         // S'assurer qu'on ne tombe pas en dessous de 0
@@ -45,6 +51,13 @@ public class Generateur {
 		return capaciteMax;
 	}
 	
+	 /**
+     * Vérifie l'égalité entre deux générateurs.
+     * Deux générateurs sont considérés égaux si leurs noms sont identiques.
+     *
+     * @param o objet à comparer
+     * @return true si les générateurs ont le même nom, false sinon
+     */
 	@Override
 	public boolean equals(Object o) {
 		if(o instanceof Generateur) {

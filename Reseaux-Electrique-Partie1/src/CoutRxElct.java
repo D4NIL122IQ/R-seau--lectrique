@@ -1,6 +1,11 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Cette classe permet de calculer divers coûts liés au réseau électrique,
+ * notamment la dispersion de charge entre générateurs et les surcharges éventuelles.
+ * Elle permet également de modifier dynamiquement les connexions entre maisons et générateurs.
+ */
 public class CoutRxElct {
     private ReseauElectrique rxe;
     // Ajout de variables pour stocker les derniers calculs
@@ -51,6 +56,12 @@ public class CoutRxElct {
     public double getDisp() { return lastDisp; }
     public double getSurcharge() { return lastSurcharge; }
 
+    /**
+     * Calcule le coût global du réseau électrique.
+     * Le coût est basé sur la dispersion et une surcharge fortement pénalisée.
+     *
+     * @return coût total du réseau
+     */
     public double calculeCoutRxE() {
         if (rxe.getGens().isEmpty()) {
             return 0;
@@ -63,6 +74,13 @@ public class CoutRxElct {
     /**
      * MODIFIÉ POUR CORRESPONDRE AUX EXIGENCES
      * Demande l'ancienne connexion (M1 G1) puis la nouvelle (M1 G2)
+     */
+    /**
+     * Permet de modifier une connexion existante entre une maison et un générateur.
+     * L'utilisateur doit saisir une connexion existante (ex. : "M1 G1") puis une nouvelle
+     * connexion pour déplacer la maison vers un autre générateur.
+     *
+     * @param clavier scanner utilisé pour les saisies utilisateur
      */
     public void modifierConnexion(Scanner clavier) {
 
