@@ -30,6 +30,20 @@ public class ReseauElectrique {
     public ArrayList<Generateur> getGens(){
         return gens;
     }
+    
+    //Ajout d'une Méthode utilitaire : retourne la connexion associée à une maison (ou null si aucune)
+    // Permet d'éviter de répéter des boucles partout dans le code.
+    private Connexion findConnexion(Maison m) {
+        for (Connexion c : connexions) {
+            if (c.getMs().equals(m)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+
+    
 
     // --- Méthodes de recherche (Nécessaires pour Utilisateur.java) ---
     public Maison findMaisonByName(String nom) {
@@ -73,18 +87,14 @@ public class ReseauElectrique {
                     System.out.println("  -> AVERTISSEMENT: Maison '" + t.getNomM() + "' mise a jour (Consommation: " + t.getConso() + ").");
 
                     // 3. Mettre à jour la charge du générateur connecté (s'il y en a un)
-                    for (Connexion c : connexions) {
-                        if (c.getMs().equals(t)) {
-                            // 4. On a trouvé la connexion de cette maison
-                            Generateur g = c.getGen();
-
-                            // 5. On met à jour la charge du générateur
-                            g.soustraireCharge(oldConso.getConso());
-                            g.setChargeActu(newConso.getConso());
-
-                            System.out.println("     -> Mise a jour charge " + g.getNomG() + ": " + g.getChargeActu() + "kwh");
-                            break; // On a trouvé la connexion, on sort de la boucle
-                        }
+                    
+                    //Recherche directe de la connexion de cette maison (évite la boucle for)
+                    Connexion c = findConnexion(t);
+                    if (c != null) {
+                        Generateur g = c.getGen();
+                        g.soustraireCharge(oldConso.getConso());
+                        g.setChargeActu(newConso.getConso());
+                        System.out.println("     -> Mise a jour charge " + g.getNomG() + ": " + g.getChargeActu() + "kwh");
                     }
                     // --- FIN DE VOTRE BLOC ---
                     return;
@@ -228,13 +238,10 @@ public class ReseauElectrique {
         t.append("\n=== MAISONS (non connectées) ===\n");
         int maisonsNonConnectees = 0;
         for (Maison m : maisons) {
-            boolean connectee = false;
-            for (Connexion c : connexions) {
-                if (c.getMs().equals(m)) {
-                    connectee = true;
-                    break;
-                }
-            }
+            
+            //Vérifie si la maison est connectée en utilisant la méthode utilitaire findConnexion()
+            boolean connectee = (findConnexion(m) != null);
+
             if (!connectee) {
                 t.append(String.format("  -> %s (Consommation: %dkW)\n", m.getNomM(), m.getConso().getConso()));
                 maisonsNonConnectees++;
