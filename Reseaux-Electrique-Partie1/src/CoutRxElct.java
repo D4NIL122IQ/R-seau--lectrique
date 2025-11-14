@@ -1,158 +1,156 @@
-// Fichier : CoutRxElct.java
-// (Version corrigée qui utilise une référence au lieu de copies)
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class CoutRxElct {
-    // --- MODIFICATION ---
-    // On ne stocke plus les listes, mais le réseau lui-même
     private ReseauElectrique rxe;
+    // Ajout de variables pour stocker les derniers calculs
+    private double lastDisp = 0;
+    private double lastSurcharge = 0;
 
 
     public CoutRxElct(ReseauElectrique rxe) {
-        // On garde la référence vers l'objet rxe principal
         this.rxe = rxe;
     }
 
     private double moyenneGen() {
-        // On utilise rxe.getGens() pour avoir la liste à jour
         ArrayList<Generateur> gen = rxe.getGens();
-
-        if (gen.isEmpty()) {
-            return 0;
-        }
-
+        if (gen.isEmpty()) return 0;
         int somme = 0;
         for (Generateur g : gen) {
             somme += g.getChargeActu();
         }
-
         return (double) somme / gen.size();
     }
 
     private double disp() {
-        /*
-         * return : disp = SOMME(|Ug - Um|) tel que Ug la charge actuelle du generateur
-         * et Um la moyenne des charges
-         */
-
-        // On utilise rxe.getGens() pour avoir la liste à jour
         ArrayList<Generateur> gen = rxe.getGens();
-
         double somme = 0;
         double Um = moyenneGen();
         for (Generateur g : gen) {
             somme += Math.abs(g.getChargeActu() - Um);
         }
-
+        this.lastDisp = somme; // Stocke le résultat
         return somme;
     }
 
     private double surcharge() {
-        double somme = 0 ;
-
-        // On utilise rxe.getGens() pour avoir la liste à jour
+        double somme = 0;
         ArrayList<Generateur> gen = rxe.getGens();
-
         for(Generateur g: gen) {
-            // Éviter la division par zéro si la capacité est 0
             if (g.getCapaciteMax() > 0) {
                 somme += Math.max(0, ((double) g.getChargeActu() - g.getCapaciteMax()) / g.getCapaciteMax());
             } else if (g.getChargeActu() > 0) {
-                // Si capacité 0 mais charge > 0, c'est une surcharge
-                somme += 1.0; // Pénalité fixe (ou autre logigue)
+                somme += Double.POSITIVE_INFINITY; // Grosse pénalité si capacité 0 mais charge
             }
         }
+        this.lastSurcharge = somme; // Stocke le résultat
         return somme;
     }
 
+    // Getters pour l'affichage
+    public double getDisp() { return lastDisp; }
+    public double getSurcharge() { return lastSurcharge; }
+
     public double calculeCoutRxE() {
-        // On utilise rxe.getGens() pour avoir la liste à jour
         if (rxe.getGens().isEmpty()) {
             return 0;
         }
-
         double severitePenalisation = 10;
+        // Appelle disp() et surcharge() qui vont mettre à jour lastDisp et lastSurcharge
         return disp() + severitePenalisation * surcharge();
     }
 
+    /**
+     * MODIFIÉ POUR CORRESPONDRE AUX EXIGENCES
+     * Demande l'ancienne connexion (M1 G1) puis la nouvelle (M1 G2)
+     */
     public void modifierConnexion(Scanner clavier) {
 
-        // 0. Vérifier s'il y a des connexions
         if (rxe.getConnexions().isEmpty()) {
             System.err.println("Aucune connexion à modifier.");
             return;
         }
-
         System.out.println("--- Modification d'une connexion ---");
         System.out.println(rxe.afficherConnexion()); // Montrer l'état actuel
 
-        System.out.print("  Nom de la maison à déplacer : ");
-        String nomMaison = clavier.nextLine();
+        // 1. Saisir l'ancienne connexion
+        System.out.print("Veuillez saisir la connexion que vous souhaitez modifier (ex: M1 G1) : ");
+        String lineAncienne = clavier.nextLine().trim();
+        String[] partsAncienne = lineAncienne.split(" ");
+        if (partsAncienne.length != 2) {
+            System.err.println("Format invalide."); return;
+        }
 
-        // 1. Trouver l'objet Maison ET sa connexion
-        Maison maisonAModifier = null;
+        // 2. Trouver les objets
+        Maison m = rxe.findMaisonByName(partsAncienne[0]);
+        Generateur gAncien = rxe.findGenByName(partsAncienne[1]);
+        if (m == null || gAncien == null) { // Essai inversé
+            m = rxe.findMaisonByName(partsAncienne[1]);
+            gAncien = rxe.findGenByName(partsAncienne[0]);
+        }
+        if (m == null) {
+            System.err.println("Maison introuvable."); return;
+        }
+        if (gAncien == null) {
+            System.err.println("Ancien generateur introuvable."); return;
+        }
+
+        // 3. Vérifier si la connexion existe
         Connexion connexionAModifier = null;
-
         for (Connexion c : rxe.getConnexions()) {
-            if (c.getMs().getNomM().equals(nomMaison)) {
-                maisonAModifier = c.getMs();
+            if (c.getMs().equals(m) && c.getGen().equals(gAncien)) {
                 connexionAModifier = c;
                 break;
             }
         }
-
-        if (maisonAModifier == null) {
-            System.err.println("Maison '" + nomMaison + "' introuvable ou non connectée.");
+        if (connexionAModifier == null) {
+            System.err.println("Erreur: La connexion '" + m.getNomM() + " -> " + gAncien.getNomG() + "' n'existe pas.");
             return;
         }
 
-        System.out.print("  Nom du NOUVEAU générateur : ");
-        String nomNouveauGen = clavier.nextLine();
-
-        // 2. Trouver l'objet Generateur de destination
-        Generateur nouveauGen = null;
-        for (Generateur g : rxe.getGens()) {
-            if (g.getNomG().equals(nomNouveauGen)) {
-                nouveauGen = g;
-                break;
-            }
+        // 4. Saisir la nouvelle connexion
+        System.out.print("Veuillez saisir la nouvelle connexion (ex: M1 G2) : ");
+        String lineNouvelle = clavier.nextLine().trim();
+        String[] partsNouvelle = lineNouvelle.split(" ");
+        if (partsNouvelle.length != 2) {
+            System.err.println("Format invalide."); return;
         }
 
-        if (nouveauGen == null) {
-            System.err.println("Générateur '" + nomNouveauGen + "' introuvable.");
+        // 5. Trouver les nouveaux objets
+        Maison mNouveau = rxe.findMaisonByName(partsNouvelle[0]);
+        Generateur gNouveau = rxe.findGenByName(partsNouvelle[1]);
+        if (mNouveau == null || gNouveau == null) { // Essai inversé
+            mNouveau = rxe.findMaisonByName(partsNouvelle[1]);
+            gNouveau = rxe.findGenByName(partsNouvelle[0]);
+        }
+
+        // 6. Valider
+        if (mNouveau == null) {
+            System.err.println("Nouvelle maison introuvable."); return;
+        }
+        if (gNouveau == null) {
+            System.err.println("Nouveau generateur introuvable."); return;
+        }
+        if (!mNouveau.equals(m)) {
+            System.err.println("Erreur: Vous ne pouvez pas changer la maison (seulement le generateur).");
             return;
         }
-
-        // 3. Récupérer l'ancien générateur
-        Generateur ancienGen = connexionAModifier.getGen();
-
-        // 4. Vérifier si on ne se reconnecte pas au même
-        if (ancienGen.equals(nouveauGen)) {
+        if (gAncien.equals(gNouveau)) {
             System.out.println("  -> La maison est déjà connectée à ce générateur.");
             return;
         }
 
-        // 5. Exécuter la modification
-        int conso = maisonAModifier.getConso().getConso();
+        // 7. Exécuter la modification
+        int conso = m.getConso().getConso();
+        System.out.println("  ... Déconnexion de " + gAncien.getNomG() + " ...");
+        gAncien.soustraireCharge(conso);
 
-        System.out.println("  ... Déconnexion de " + ancienGen.getNomG() + " ...");
-        ancienGen.soustraireCharge(conso);
+        System.out.println("  ... Connexion à " + gNouveau.getNomG() + " ...");
+        gNouveau.setChargeActu(conso);
 
-        System.out.println("  ... Connexion à " + nouveauGen.getNomG() + " ...");
-        nouveauGen.setChargeActu(conso);
-
-        // 6. Mettre à jour la connexion elle-même
-        connexionAModifier.setGen(nouveauGen);
+        // Mettre à jour l'objet Connexion
+        connexionAModifier.setGen(gNouveau);
 
         System.out.println("  -> Modification terminée.");
     }
-
-    public void afficherReseau() {
-        // Cette méthode peut maintenant appeler directement celle du réseau
-        System.out.println(rxe.afficherConnexion());
-    }
-
 }
