@@ -21,9 +21,9 @@ public class CoutRxElct {
 		ArrayList<Generateur> gen = rxe.getGens();
 		if (gen.isEmpty())
 			return 0;
-		int somme = 0;
+		double somme = 0;
 		for (Generateur g : gen) {
-			somme += g.getChargeActu()/g.getCapaciteMax() ;
+			somme += (double)g.getChargeActu()/g.getCapaciteMax() ;
 		}
 		return (double) somme / gen.size();
 	}
