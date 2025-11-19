@@ -24,12 +24,12 @@ Ce projet démontre une bonne application des principes de la Programmation Orie
 
 1.  **Cloner le dépôt** (ou téléchargez les fichiers `.java`) :
     ```bash
-    git clone https://[URL-DE-VOTRE-DEPOT-GIT].git
+    git clone https://github.com/D4NIL122IQ/Reseau-Distribution-Electrique.git
     ```
 
 2.  **Naviguer dans le dossier** du projet :
     ```bash
-    cd [NOM-DU-DOSSIER]
+    cd Reseaux-Electrique-Partie1/src
     ```
 
 3.  **Compiler tous les fichiers** `.java` :
@@ -74,12 +74,12 @@ Ce projet démontre une bonne application des principes de la Programmation Orie
 
 1.  **Cloner le dépôt** (ou téléchargez les fichiers `.java`) :
     ```bash
-    git clone https://[URL-DE-VOTRE-DEPOT-GIT].git
+    git clone https://github.com/D4NIL122IQ/Reseau-Distribution-Electrique.git
     ```
 
 2.  **Naviguer dans le dossier** du projet :
     ```bash
-    cd [NOM-DU-DOSSIER]
+    cd Reseaux-Electrique-Partie1/src
     ```
 
 3.  **Compiler tous les fichiers** `.java` :
