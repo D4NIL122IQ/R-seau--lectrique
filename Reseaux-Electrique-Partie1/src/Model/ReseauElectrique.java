@@ -1,3 +1,5 @@
+package Model;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 // StringBuffer est dans java.lang, pas besoin d'import explicite, mais c'est bien de le savoir.
@@ -205,9 +207,10 @@ public class ReseauElectrique {
      */
     public boolean validerReseau() {
         ArrayList<String> problemes = new ArrayList<>();
-        if (maisons.isEmpty()) {
-            System.out.println("  -> Reseau vide, validation non necessaire.");
-            return true; // Un réseau vide est "conforme"
+        if (maisons.isEmpty() ) {
+            System.out.println("  -> Reseau vide, validation necessaire.");
+            problemes.add("Liste connexion vide");
+            return false; // Un réseau vide est "conforme"
         }
 
         for (Maison m : maisons) {

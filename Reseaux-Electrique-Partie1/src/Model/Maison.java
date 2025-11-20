@@ -1,3 +1,5 @@
+package Model;
+
 
 public class Maison {
 	private String nomM;

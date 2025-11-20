@@ -1,3 +1,5 @@
+package Model;
+
 
 public class Generateur {
 	private String nomG;

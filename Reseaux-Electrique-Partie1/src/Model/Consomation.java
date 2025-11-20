@@ -1,3 +1,5 @@
+package Model;
+
 
 public enum Consomation {
 	BASSE(10), NORMAL(20), FORTE(40);
