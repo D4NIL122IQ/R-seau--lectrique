@@ -2,16 +2,16 @@
  * Fichier : Utilisateur.java
  * (Classe principale corrigée pour inclure toutes les options)
  */
-package Vue;
+package vue;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import Model.Consomation;
-import Model.CoutRxElct;
-import Model.Generateur;
-import Model.Maison;
-import Model.ReseauElectrique;
+import model.Consomation;
+import model.CoutRxElct;
+import model.Generateur;
+import model.Maison;
+import model.ReseauElectrique;
 
 class Utilisateur {
 

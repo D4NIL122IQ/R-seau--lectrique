@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -164,7 +164,15 @@ public class ReseauElectrique {
         g.setChargeActu(m.getConso().getConso());
         System.out.println("  -> Connexion ajoutee entre '" + m.getNomM() + "' et '" + g.getNomG() + "'.");
     }
-
+    
+    /*
+     * Ajouter une connexion 
+     * 
+     * @param co une connexion
+     */
+    public void ajoutConnexion(Connexion co) {
+    	connexions.add(co);
+    }
     /**
      * Supprime une connexion spécifique entre une maison et un générateur.
      * Si la connexion est trouvée, elle est retirée de la liste et
