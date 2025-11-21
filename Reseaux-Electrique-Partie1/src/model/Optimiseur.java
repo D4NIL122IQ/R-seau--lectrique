@@ -22,7 +22,7 @@ public class Optimiseur {
         double temperatureMin = 0.01;
 
         double coutActuel = calculateur.calculeCoutRxE();
-        System.out.println("  -> [Auto] Coût initial : " + String.format("%.2f", coutActuel));
+        System.out.println("  -> [Auto] Coût initial : " + String.format("%.3f", coutActuel));
 
         double meilleurCoutConnu = coutActuel;
         int iteration = 0;
