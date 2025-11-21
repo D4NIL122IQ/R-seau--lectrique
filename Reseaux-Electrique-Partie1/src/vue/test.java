@@ -1,4 +1,4 @@
-package Vue;
+package vue;
 
 import model.Consomation;
 import model.CoutRxElct;

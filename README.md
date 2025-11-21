@@ -121,7 +121,7 @@ L'interaction se fait en deux phases, via des menus dans le terminal.
 
 Ce projet est conçu autour du principe de **Séparation des Responsabilités** (Separation of Concerns).
 
-* **`Utilisateur.java` (La Vue / Contrôleur)**
+* **`Utilisateur.java` (La vue / Contrôleur)**
     * **Rôle** : Gérer l'interaction avec l'utilisateur (menus, `Scanner`).
     * **Logique** : Traduire les entrées de l'utilisateur (ex: `G1 60`) en appels de méthode (ex: `rxe.ajoutGenerateur(...)`). C'est le "chef d'orchestre".
 
