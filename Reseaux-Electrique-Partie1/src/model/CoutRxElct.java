@@ -3,85 +3,66 @@ package model;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Cette classe permet de calculer divers coûts liés au réseau électrique,
- * notamment la dispersion de charge entre générateurs et les surcharges
- * éventuelles. Elle permet également de modifier dynamiquement les connexions
- * entre maisons et générateurs.
- */
 public class CoutRxElct {
-	private ReseauElectrique rxe;
-	// Ajout de variables pour stocker les derniers calculs
-	private double lastDisp = 0;
-	private double lastSurcharge = 0;
+    private ReseauElectrique rxe;
+    private double lastDisp = 0;
+    private double lastSurcharge = 0;
 
-	public CoutRxElct(ReseauElectrique rxe) {
-		this.rxe = rxe;
-	}
+    // Par défaut 10, mais modifiable via ligne de commande
+    private double severitePenalisation = 10.0;
 
-	private double moyenneGen() {
-		ArrayList<Generateur> gen = rxe.getGens();
-		if (gen.isEmpty())
-			return 0;
-		double somme = 0;
-		for (Generateur g : gen) {
-			somme += (double)g.getChargeActu()/g.getCapaciteMax() ;
-		}
-		return (double) somme / gen.size();
-	}
+    public CoutRxElct(ReseauElectrique rxe) {
+        this.rxe = rxe;
+    }
 
-	private double disp() {
-		ArrayList<Generateur> gen = rxe.getGens();
-		double somme = 0;
-		double Um = moyenneGen();
-		System.out.println(Um);
-		for (Generateur g : gen) {
-			somme += Math.abs((double)g.getChargeActu()/g.getCapaciteMax() - Um);
-			System.out.println("u" + g.getNomG() + " = " + (double)g.getChargeActu()/g.getCapaciteMax());
-		}
-		this.lastDisp = somme; // Stocke le résultat
-		return somme;
-	}
+    // --- Setter pour Lambda (Sévérité) ---
+    public void setSeverite(double s) {
+        this.severitePenalisation = s;
+    }
 
-	private double surcharge() {
-		double somme = 0;
-		ArrayList<Generateur> gen = rxe.getGens();
-		for (Generateur g : gen) {
-			if (g.getCapaciteMax() > 0) {
-				somme += Math.max(0, ((double) g.getChargeActu() - g.getCapaciteMax()) / g.getCapaciteMax());
-			} else if (g.getChargeActu() > 0) {
-				somme += Double.POSITIVE_INFINITY; // Grosse pénalité si capacité 0 mais charge
-			}
-		}
-		this.lastSurcharge = somme; // Stocke le résultat
-		return somme;
-	}
+    private double moyenneGen() {
+        ArrayList<Generateur> gen = rxe.getGens();
+        if (gen.isEmpty()) return 0;
+        double somme = 0;
+        for (Generateur g : gen) {
+            somme += (double)g.getChargeActu()/g.getCapaciteMax() ;
+        }
+        return (double) somme / gen.size();
+    }
 
-	// Getters pour l'affichage
-	public double getDisp() {
-		return lastDisp;
-	}
+    private double disp() {
+        ArrayList<Generateur> gen = rxe.getGens();
+        double somme = 0;
+        double Um = moyenneGen();
+        for (Generateur g : gen) {
+            somme += Math.abs((double)g.getChargeActu()/g.getCapaciteMax() - Um);
+        }
+        this.lastDisp = somme;
+        return somme;
+    }
 
-	public double getSurcharge() {
-		return lastSurcharge;
-	}
+    private double surcharge() {
+        double somme = 0;
+        ArrayList<Generateur> gen = rxe.getGens();
+        for (Generateur g : gen) {
+            if (g.getCapaciteMax() > 0) {
+                somme += Math.max(0, ((double) g.getChargeActu() - g.getCapaciteMax()) / g.getCapaciteMax());
+            } else if (g.getChargeActu() > 0) {
+                somme += Double.POSITIVE_INFINITY;
+            }
+        }
+        this.lastSurcharge = somme;
+        return somme;
+    }
 
-	/**
-	 * Calcule le coût global du réseau électrique. Le coût est basé sur la
-	 * dispersion et une surcharge fortement pénalisée.
-	 *
-	 * @return coût total du réseau
-	 */
-	public double calculeCoutRxE() {
-		if (rxe.getGens().isEmpty()) {
-			return 0;
-		}
-		double severitePenalisation = 10;
-		// Appelle disp() et surcharge() qui vont mettre à jour lastDisp et
-		// lastSurcharge
-		return disp() + severitePenalisation * surcharge();
-	}
+    public double getDisp() { return lastDisp; }
+    public double getSurcharge() { return lastSurcharge; }
 
+    public double calculeCoutRxE() {
+        if (rxe.getGens().isEmpty()) return 0;
+        // Utilise la variable severitePenalisation configurée
+        return disp() + severitePenalisation * surcharge();
+    }
 	/**
 	 * MODIFIÉ POUR CORRESPONDRE AUX EXIGENCES Demande l'ancienne connexion (M1 G1)
 	 * puis la nouvelle (M1 G2)
