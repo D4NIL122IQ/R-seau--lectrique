@@ -1,10 +1,10 @@
 package Vue;
 
-import Model.Consomation;
-import Model.CoutRxElct;
-import Model.Generateur;
-import Model.Maison;
-import Model.ReseauElectrique;
+import model.Consomation;
+import model.CoutRxElct;
+import model.Generateur;
+import model.Maison;
+import model.ReseauElectrique;
 
 public class test {
 	public static void main(String args[]) {

@@ -1,143 +1,129 @@
 package fileOperation;
 
-import model.ReseauElectrique;
-import model.Generateur;
-import model.Maison;
-import model.Connexion;
-import model.Consomation;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import exceptions.ArgumentNonDefiniException;
-import exceptions.ElementErroneException;
-import exceptions.OrdreInstanceException;
-import exceptions.FiniPointException;
-import exceptions.NormbreParametreExeception;
-import exceptions.MGException;
+import exceptions.*; // Vos exceptions personnalisées
+import model.Connexion;
+import model.Consomation;
+import model.Generateur;
+import model.Maison;
+import model.ReseauElectrique;
 
 public class ParserFile {
-	private static String[] element = { "generateur", "maison", "connexion" }; // tableau qio contient les elements
-																				// possible et dans l'ordre
-	/*
-	 * lit un fichier qui contient un reseau electroique et retourne une instance de
-	 * reseau electrique
-	 * 
-	 * @param filepath chamin absolu du fichier
-	 * 
-	 */
 
-	public static ReseauElectrique parser(String filepath) throws ArgumentNonDefiniException, ElementErroneException,
-			OrdreInstanceException, FiniPointException, MGException, NormbreParametreExeception {
-		ReseauElectrique rxe = null;
-		FileReader f;
-		BufferedReader bReader;
-		int i = 0;
-		String ligne;
+    // On laisse remonter TOUTES les exceptions vers le Main
+    public static ReseauElectrique parser(String filepath) throws Exception {
+        ReseauElectrique rxe = new ReseauElectrique(); // On instancie le réseau vide au début
 
-		try {
-			f = new FileReader(filepath);
-			bReader = new BufferedReader(f);
+        int numLigne = 0; // COMPTEUR DE LIGNE (Demandé par le PDF)
+        int etape = 0; // 0=Gen, 1=Maison, 2=Connexion
 
-			while ((ligne = bReader.readLine()) != null) {
-				if (ligne.endsWith(".")) { // voir si chaque ligne fini avec un point
-					if (ligne.startsWith("generateur")) {
-						if (i > 0) {
-							throw new OrdreInstanceException("Ordre non respecter");
-						}
-						rxe.ajoutGenerateur(parserGen(ligne));
+        try (BufferedReader bReader = new BufferedReader(new FileReader(filepath))) {
+            String ligne;
 
-					} else if (ligne.startsWith("maison")) {
-						if (i == 0) {
-							i = 1;
-							rxe.ajoutMaison(parserMaison(ligne));
-						} else if (i > 1) {
-							throw new OrdreInstanceException("Ordre non respecter");
-						}
-					} else if (ligne.startsWith("connexion")) {
-						i = 3;
+            while ((ligne = bReader.readLine()) != null) {
+                numLigne++;
+                ligne = ligne.trim();
 
-						rxe.ajoutConnexion(parserCo(ligne, rxe));
+                if (ligne.isEmpty()) continue; // Ignorer les lignes vides
 
-					} else {
-						// ligne inconnue → tu peux gérer comme tu veux
-						throw new ElementErroneException("Element faux");
-					}
-				} else {
-					throw new FiniPointException();
-				}
+                if (!ligne.endsWith(".")) {
+                    throw new FiniPointException("Erreur ligne " + numLigne + " : La ligne doit finir par un point.");
+                }
 
-			}
+                // On retire le point final pour le traitement
+                String contenu = ligne.substring(0, ligne.length() - 1);
 
-		} catch (FileNotFoundException fne) { // erreur ouverture du fichier
-			System.out.println("Fichier introuvable : " + filepath);
-		} catch (IOException e) { // erreur pendant la lecture
-			System.out.println("Erreur pendant la lecture du fichier");
+                if (contenu.startsWith("generateur")) {
+                    if (etape > 0) throw new OrdreInstanceException("Erreur ligne " + numLigne + " : Les generateurs doivent être definis en premier.");
+                    rxe.ajoutGenerateur(parserGen(contenu, numLigne));
 
-		} catch (NumberFormatException e) {
-			System.out.println(e.getMessage());
-		}
+                } else if (contenu.startsWith("maison")) {
+                    if (etape == 0) etape = 1;
+                    if (etape > 1) throw new OrdreInstanceException("Erreur ligne " + numLigne + " : Les maisons doivent être definies avant les connexions.");
+                    rxe.ajoutMaison(parserMaison(contenu, numLigne));
 
-		return rxe;
-	}
+                } else if (contenu.startsWith("connexion")) {
+                    etape = 2;
+                    // On passe 'rxe' pour vérifier que les objets existent déjà
+                    rxe.ajoutConnexion(parserCo(contenu, rxe, numLigne));
 
-	private static Generateur parserGen(String ligne) {
-		String[] data = ligne.split("\\(")[1].split("\\).")[0].split(",");
+                } else {
+                    throw new ElementErroneException("Erreur ligne " + numLigne + " : Element inconnu '" + contenu + "'");
+                }
+            }
+        }
+        // On ne catch pas FileNotFoundException ici, on laisse le Main gérer pour afficher "Fichier introuvable"
 
-		return new Generateur(data[0], Integer.parseInt(data[1]));
-	}
+        return rxe;
+    }
 
-	private static Maison parserMaison(String ligne) throws ArgumentNonDefiniException {
-		String[] data = ligne.split("\\(")[1].split("\\).")[0].split(",");
-		Maison temp;
-		switch (data[1]) {
-		case "BASSE":
-			temp = new Maison(data[0], Consomation.BASSE);
-			break;
-		case "NORMAL":
-			temp = new Maison(data[0], Consomation.NORMAL);
-			break;
-		case "FORTE":
-			temp = new Maison(data[0], Consomation.FORTE);
-			break;
-		default:
-			throw new ArgumentNonDefiniException("");
-		}
+    private static Generateur parserGen(String ligne, int n) throws NormbreParametreExeception, NumberFormatException {
+        // Format attendu: generateur(nom,capa)
+        try {
+            String params = ligne.substring(ligne.indexOf("(") + 1, ligne.indexOf(")"));
+            String[] data = params.split(",");
 
-		return temp;
-	}
+            if (data.length != 2) throw new NormbreParametreExeception("Ligne " + n + ": 2 paramètres attendus pour generateur.");
 
-	private static Connexion parserCo(String ligne, ReseauElectrique rxe)
-			throws NormbreParametreExeception, MGException {
-		String[] data = ligne.split("\\(")[1].split("\\).")[0].split(",");
+            return new Generateur(data[0].trim(), Integer.parseInt(data[1].trim()));
+        } catch (IndexOutOfBoundsException e) {
+            throw new NormbreParametreExeception("Ligne " + n + ": Format generateur incorrect.");
+        }
+    }
 
-		if (data.length != 2) {
-			throw new NormbreParametreExeception("Parametre probleme");
-		}
-		Connexion temp;
+    private static Maison parserMaison(String ligne, int n) throws ArgumentNonDefiniException, NormbreParametreExeception {
+        try {
+            String params = ligne.substring(ligne.indexOf("(") + 1, ligne.indexOf(")"));
+            String[] data = params.split(",");
 
-		String arg1 = data[0];
-		String arg2 = data[1];
+            if (data.length != 2) throw new NormbreParametreExeception("Ligne " + n + ": 2 paramètres attendus pour maison.");
 
-		// trouver le bon ordre des arguments
-		Maison maison = rxe.findMaisonByName(arg1);
-		Generateur gen = rxe.findGenByName(arg2);
+            String nom = data[0].trim();
+            String consoStr = data[1].trim();
 
-		if (maison == null || gen == null) {
-			maison = rxe.findMaisonByName(arg2);
-			gen = rxe.findGenByName(arg1);
-		}
+            Consomation c;
+            try {
+                c = Consomation.valueOf(consoStr);
+            } catch (IllegalArgumentException e) {
+                throw new ArgumentNonDefiniException("Ligne " + n + ": Consommation '" + consoStr + "' inconnue (attendue: BASSE, NORMAL, FORTE).");
+            }
+            return new Maison(nom, c);
 
-		if (maison != null && gen != null) {
-			temp = new Connexion(maison, gen); // La logique est dans rxe
-		} else {
-			throw new MGException();
-		}
+        } catch (IndexOutOfBoundsException e) {
+            throw new NormbreParametreExeception("Ligne " + n + ": Format maison incorrect.");
+        }
+    }
 
-		return temp;
-	}
+    private static Connexion parserCo(String ligne, ReseauElectrique rxe, int n) throws MGException, NormbreParametreExeception {
+        try {
+            String params = ligne.substring(ligne.indexOf("(") + 1, ligne.indexOf(")"));
+            String[] data = params.split(",");
 
+            if (data.length != 2) throw new NormbreParametreExeception("Ligne " + n + ": 2 paramètres attendus pour connexion.");
+
+            String arg1 = data[0].trim();
+            String arg2 = data[1].trim();
+
+            Maison m = rxe.findMaisonByName(arg1);
+            Generateur g = rxe.findGenByName(arg2);
+
+            // Gestion de l'inversion (Maison, Gen) ou (Gen, Maison)
+            if (m == null || g == null) {
+                m = rxe.findMaisonByName(arg2);
+                g = rxe.findGenByName(arg1);
+            }
+
+            if (m == null || g == null) {
+                throw new MGException("Ligne " + n + ": Impossible de creer une connexion, Maison ou Generateur inconnu (" + arg1 + ", " + arg2 + ")");
+            }
+
+            return new Connexion(m, g);
+        } catch (IndexOutOfBoundsException e) {
+            throw new NormbreParametreExeception("Ligne " + n + ": Format connexion incorrect.");
+        }
+    }
 }
