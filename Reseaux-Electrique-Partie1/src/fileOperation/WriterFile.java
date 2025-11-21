@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import model.ReseauElectrique;
 import model.Maison;
 import model.Generateur;
-import model.Maison;
 import model.Connexion;
 
 public class WriterFile {
@@ -34,16 +33,16 @@ public class WriterFile {
 		for(Generateur g:gen) {
 			temp.append("generateur(" + g.getNomG() + "," + g.getCapaciteMax() + ").\n");
 		}
-		
+		temp.deleteCharAt(temp.length() - 1);
 		return temp.toString();
 	}
 	
 	private static String saveMai(ArrayList<Maison> mai) {
 		StringBuffer temp = new StringBuffer("");
 		for(Maison m:mai) {
-			temp.append("generateur(" + m.getNomM() + "," + m.getConso() + ").\n");
+			temp.append("maison(" + m.getNomM() + "," + m.getConso() + ").\n");
 		}
-		
+		temp.deleteCharAt(temp.length() - 1);
 		return temp.toString();
 	}
 	
@@ -52,7 +51,7 @@ public class WriterFile {
 		for(Connexion c:co) {
 			temp.append("connexion(" + c.getGen().getNomG() + "," + c.getMs().getNomM() + ").\n");
 		}
-		
+		temp.deleteCharAt(temp.length() - 1);
 		return temp.toString();
 	}
 }	
