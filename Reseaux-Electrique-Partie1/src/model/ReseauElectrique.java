@@ -171,7 +171,13 @@ public class ReseauElectrique {
      * @param co une connexion
      */
     public void ajoutConnexion(Connexion co) {
-    	connexions.add(co);
+        connexions.add(co);
+
+        // --- CORRECTION : Mettre à jour la charge du générateur ! ---
+        Generateur g = co.getGen();
+        Maison m = co.getMs();
+        g.setChargeActu(m.getConso().getConso());
+        // -----------------------------------------------------------
     }
     /**
      * Supprime une connexion spécifique entre une maison et un générateur.
