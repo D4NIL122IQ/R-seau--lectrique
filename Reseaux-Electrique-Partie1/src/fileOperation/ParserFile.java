@@ -47,6 +47,9 @@ public class ParserFile {
                     rxe.ajoutMaison(parserMaison(contenu, numLigne));
 
                 } else if (contenu.startsWith("connexion")) {
+                    if (etape < 1) {
+                        throw new OrdreInstanceException("Erreur ordre : définissez les maisons avant les connexions.");
+                    }
                     etape = 2;
                     // On passe 'rxe' pour vérifier que les objets existent déjà
                     rxe.ajoutConnexion(parserCo(contenu, rxe, numLigne));
